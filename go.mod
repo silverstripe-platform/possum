@@ -1,4 +1,4 @@
-module github.com/silverstripeltd/possum
+module github.com/silverstripe-platform/possum
 
 go 1.18
 
