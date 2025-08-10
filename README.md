@@ -63,7 +63,7 @@ In order to deploy your changes, you will need to package the deployment using `
 ```
 cd cmd/lambda
 
-aws-vault exec <account> -- make package
+aws-vault exec <account> -- make package-<playpen/palliser>
 ```
 
 This command will build the golang `lambda` application, combine it with the `template.yml` Cloudformation, and package it together to be consumed by Cloudformation.
@@ -79,3 +79,31 @@ aws-vault exec <account> -- make deploy
 ```
 
 This command will tell Cloudformation to deploy the package created using `make package`.
+
+### Setting up Slack and OfficeHours
+
+To setup or change the Slack channel of Office hours for Possum, you will need to manually make some changes in the AWS Account resources created during deployment.
+
+#### Slack Tokens
+
+Possum is configured to send details to Slack using the Slack Tokens defined in Environment Variables section of the lambda function.
+
+When you first create a new deployment, you will need to replace the xxxxx values of these Environment Variables on the lambda function with valid tokens and secrets.
+
+#### OfficeHours
+
+During normal operation, possum will look for the defined `possum:schedule` tagged value in its DynamoDB table looking for an item with the id `schedules` to determine the correct hours of operations.
+
+E.g. if `possum:schedule = OfficeHours`, then it will look in the assocuated DynamoDB table created with Cloudformation for the ID `schedules` and expect a String with they key `content` that contains definitions for `OfficeHours`.
+
+E.g. DynamoDB table `ConfigTable` Item configuration
+
+```
+id (String):
+schedules
+
+content:
+[{"Name":"OfficeHours","Locations":["Pacific/Auckland"],"Periods":[{"StartTime":"07:30","StopTime":"19:00","Weekdays":["Monday","Tuesday","Wednesday","Thursday","Friday"]}]}]
+```
+
+This string can be modified to change the hours of operation and weekdays it applies to.
